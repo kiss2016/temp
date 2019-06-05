@@ -1,1 +1,0 @@
-postgresql-10.8-1-linux-x64-binaries.tar.gz filter=lfs diff=lfs merge=lfs -text
