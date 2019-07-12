@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="gb2312" />
+<meta name="applicable-device" content="pc">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+<title>详解通过Nginx部署Django（基于ubuntu)_nginx_脚本之家</title>
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+<meta name="keywords" content="django部署到nginx,nginx部署django项目,django,nginx,部署" />
+<meta name="description" content="这篇文章主要介绍了详解通过Nginx部署Django（基于ubuntu)，Django的部署可以有很多方式，采用nginx+uwsgi的方式是其中比较常见的一种方式，有兴趣的可以了解一下。" />
+<link rel="alternate" media="only screen and(max-width: 640px)" href="https://m.jb51.net/article/103245.htm" />
+<meta http-equiv="mobile-agent" content="format=html5; url=https://m.jb51.net/article/103245.htm" />
+<meta http-equiv="mobile-agent" content="format=xhtml; url=https://m.jb51.net/article/103245.htm" />
+<script type="text/javascript">
+var tougao="zx",lmname="服务器",suoyin="no";
+(function(){var reWriteUrl=function(url){if(url){var Splits=url.split("/"),siteName=window.location.pathname;if(typeof siteName!=="undefined"){return "https://m.jb51.net"+siteName}}};if(/Android|webOS|iPhone|iPad|Windows Phone|iPod|BlackBerry|SymbianOS|Nokia|Mobile/i.test(navigator.userAgent)){var url=window.location.href;var pathname=window.location.pathname;if(url.indexOf("?pc")<0){try{window.location.href=reWriteUrl(url)}catch(e){}}}})();
+</script>
+<meta name="referrer" content="always">
+<link type="text/css" href="/skin/2018/css/base.css" rel="stylesheet" />
+<link type="text/css" href="/skin/2018/css/common.css" rel="stylesheet" />
+<script type="text/javascript" src="//apps.bdimg.com/libs/jquery/1.11.3/jquery.min.js"></script>
+<script type="text/javascript">
+    if (typeof jQuery == 'undefined') {
+        document.write(unescape("%3Cscript src='/skin/js/jquery.js' type='text/javascript'%3E%3C/script%3E"));
+    }
+</script>
+<script type=text/javascript src="/js/function.js"></script> 
+</head>
+<body>
+<!--topTools Start -->
+<div class="topTools">
+    <div class="wrap clear_fix">
+		<div class="topToolsLeft">
+			<a href="/" target="_blank">脚本之家</a>
+			<a href="http://s.jb51.net" target="_blank" rel="nofollow">服务器常用软件</a>
+		</div>
+		<div class="right">
+			<ul>
+				<li><i class="sprite md left"></i><a target="_blank" href="https://m.jb51.net/" rel="nofollow">手机版</a></li>
+				<li><i class="sprite tg left"></i><a href="http://tougao.jb51.net" rel="nofollow" target="_blank">投稿中心</a></li>
+				<li id="wxHide"><i class="sprite wx left"></i><a href="javascript:void(0)" target="_blank">关注微信</a>
+					<div id="wxShow" class="wxHide_box"><img src="//files.jb51.net/skin/2018/images/erwm.jpg" alt="扫一扫" width="84" hight="84" data-baiduimageplus-ignore></div>
+				</li>
+			</ul>
+			<!--快捷导航 开始 -->
+			<div class="text_d right" id="navHide">
+        <a rel="nofollow" href="javascript:void(0);">快捷导航 <i id="icon" class="sprite arrowRight"></i></a>
+        <div id="navBox" class="nwebNav" style="display: none;">
+                <div class="ndealList clear_fix">
+                        <div class="navTitle left">
+                                <h4>
+                                        <a rel="nofollow" href="/softs/" target="_blank">软件下载</a></h4>
+                        </div>
+                        <dl class="right">
+                                <dd>
+                                        <a rel="nofollow" href="/softs/android.html" target="_blank">android</a>
+                                        <a rel="nofollow" href="/softs/mac.html" target="_blank">MAC</a>
+                                        <a rel="nofollow" href="/qudong/" target="_blank">驱动下载</a>
+                                        <a rel="nofollow" href="/fonts/" target="_blank">字体下载</a>
+                                        <a rel="nofollow" href="/dll/" target="_blank">DLL</a></dd>
+                        </dl>
+                </div>
+                <div class="ndealList clear_fix">
+                        <div class="navTitle left">
+                                <h4>
+                                        <a rel="nofollow" href="/codes/" target="_blank">源码下载</a></h4>
+                        </div>
+                        <dl class="right">
+                                <dd>
+                                        <a rel="nofollow" href="/codes/php.html" target="_blank">PHP</a>
+                                        <a rel="nofollow" href="/codes/aspnet.html" target="_blank">ASP.NET</a>
+                                        <a rel="nofollow" href="/codes/asp.html" target="_blank">ASP</a>
+                                        <a rel="nofollow" href="/codes/jsp.html" target="_blank">JSP</a></dd>
+                        </dl>
+                </div>
+                <div class="ndealList clear_fix">
+                        <div class="navTitle left">
+                                <h4><a rel="nofollow" href="/list/index_84.htm" target="_blank">软件编程</a></h4>
+                        </div>
+                        <dl class="right">
+                                <dd>
+                                        <a rel="nofollow" href="/list/list_85_1.htm" target="_blank">C#</a>
+                                        <a rel="nofollow" href="/list/list_134_1.htm" target="_blank">JAVA</a>
+                                        <a rel="nofollow" href="/list/list_159_1.htm" target="_blank">C 语言</a>
+                                        <a rel="nofollow" href="/list/list_206_1.htm" target="_blank">Delphi</a>
+                                        <a rel="nofollow" href="/list/list_233_1.htm" target="_blank">Android</a></dd>
+                        </dl>
+                </div>
+                <div class="ndealList clear_fix">
+                        <div class="navTitle left">
+                                <h4><a rel="nofollow" href="/list/index_1.htm" target="_blank">网络编程</a></h4>
+                        </div>
+                        <dl class="right">
+                                <dd>
+                                        <a rel="nofollow" href="/list/list_15_1.htm" target="_blank">PHP</a>
+                                        <a rel="nofollow" href="/list/list_21_1.htm" target="_blank">ASP.NET</a>
+                                        <a rel="nofollow" href="/list/list_2_1.htm" target="_blank">ASP</a>
+                                        <a rel="nofollow" href="/list/list_3_1.htm" target="_blank">JavaScript</a></dd>
+                        </dl>
+                </div>
+                <div class="ndealList clear_fix">
+                        <div class="navTitle left">
+                                <h4><a rel="nofollow" href="http://tools.jb51.net/" target="_blank">在线工具</a></h4>
+                        </div>
+                        <dl class="right">
+                                <dd>
+                                        <a rel="nofollow" href="/tools/cssyasuo.shtml" target="_blank">CSS格式化</a>
+                                        <a rel="nofollow" href="http://tools.jb51.net/tools/js_geshihua.asp" target="_blank">JS格式化</a>
+                                        <a rel="nofollow" href="/tools/html-js.htm" target="_blank" rel="nofollow">Html转化为Js</a></dd>
+                        </dl>
+                </div>
+                <div class="ndealList clear_fix">
+                        <div class="navTitle left">
+                                <h4><a rel="nofollow" href="/list/index_104.htm" target="_blank">数据库</a></h4>
+                        </div>
+                        <dl class="right">
+                                <dd>
+                                        <a rel="nofollow" href="/list/list_112_1.htm" target="_blank">MYSQL</a>
+                                        <a rel="nofollow" href="/list/list_113_1.htm" target="_blank">MSSQL</a>
+                                        <a rel="nofollow" href="/list/list_154_1.htm" target="_blank">oracle</a>
+                                        <a rel="nofollow" href="/list/list_155_1.htm" target="_blank">DB2</a>
+                                        <a rel="nofollow" href="/list/list_252_1.htm" target="_blank">MARIADB</a></dd>
+                        </dl>
+                </div>
+                <div class="ndealList clear_fix">
+                        <div class="navTitle left">
+                                <h4><a rel="nofollow" href="/cms/" target="_blank">CMS</a></h4>
+                        </div>
+                        <dl class="right">
+                                <dd>
+                                        <a rel="nofollow" href="/cms/list411_1.html" target="_blank">PHPCMS</a>
+                                        <a rel="nofollow" href="/cms/list408_1.html" target="_blank">DEDECMS</a>
+                                        <a rel="nofollow" href="/cms/list578_1.html" target="_blank">帝国CMS</a>
+                                        <a rel="nofollow" href="/cms/list419_1.html" target="_blank">WordPress</a>
+                                </dd>
+                        </dl>
+                </div>
+                <div class="ndealList clear_fix">
+                        <div class="navTitle left">
+                                <h4><a rel="nofollow" href="javascript:0;" target="_blank">常用工具</a></h4>
+                        </div>
+                        <dl class="right">
+                                <dd>
+                                        <a rel="nofollow" href="/zt/phphuanjing.html" target="_blank">PHP开发工具</a>
+                                        <a rel="nofollow" href="/zt/python.html" target="_blank">python</a>
+                                        <a rel="nofollow" href="/zt/photoshopxz.html" target="_blank">Photoshop</a>
+                                        <a rel="nofollow" href="/bibei/win/index.html" target="_blank">必备软件</a></dd>
+                        </dl>
+                </div>
+        </div>
+</div>
+			<!--快捷导航 结束 -->
+		</div>
+    </div>
+</div>
+<!--topTools end -->
+
+<div class="header">
+	<!-- Logo start -->
+	<div class="wrap">
+		<div class="mtb10 clearfix">
+		  <div class="logo"><a href="//www.jb51.net/"><img src="//www.jb51.net/images/logo.gif" title="脚本之家" alt="脚本之家" /></a></div>
+		  <div class="logom fl"><span id="logo_m" class="jbTestPos"></span></div>
+		  <div class="logor fr"><span id="logo_r" class="jbTestPos"></span></div>
+		</div>
+	</div>
+	<!--Logo end -->
+	
+	<!-- 导航开始 -->
+	<div class="nav_top clearfix">
+		<ul>
+			<li><a href="/">网站首页</a></li>
+			<li><a href="/web/">网页制作</a></li>
+			<li><a href="/list/index_1.htm">网络编程</a></li>
+			<li><a href="/list/index_96.htm">脚本专栏</a></li>
+			<li><a href="/jiaoben/">脚本下载</a></li>
+			<li><a href="/list/index_104.htm">数据库</a></li>
+			<li><a href="/list/list_82_1.htm">服务器</a></li>
+			<li><a href="/books/">电子书籍</a></li>
+			<li><a href="/os/">操作系统</a></li>
+			<li><a href="/yunying/">网站运营</a></li>
+			<li><p><i>其它</i><span>
+				<a href="/pingmian/">平面设计</a>
+				<a href="/media/">媒体动画</a>
+				<a href="/diannaojichu/">电脑基础</a>
+				<a href="/hardware/">硬件教程</a>
+				<a href="/hack/">网络安全</a>	
+			</span></p></li>
+		</ul>
+	</div>
+	<!--导航结束-->
+</div>
+
+<!-- 二级菜单开始 -->
+<div class="wrap">
+	<div class="subnav clearfix">
+<ul><li><a href='/list/list_192_1.htm' title="星外虚拟主机">星外虚拟主机</a></li>
+<li><a href='/list/list_193_1.htm' title="华众虚拟主机">华众虚拟主机</a></li>
+<li><a href='/list/list_203_1.htm' title="Linux">Linux</a></li>
+<li><a href='/list/list_204_1.htm' title="win服务器">win服务器</a></li>
+<li><a href='/list/list_218_1.htm' title="FTP服务器">FTP服务器</a></li>
+<li><a href='/list/list_219_1.htm' title="DNS服务器">DNS服务器</a></li>
+<li><a href='/list/list_223_1.htm' title="Tomcat ">Tomcat </a></li>
+<li><a href='/list/list_226_1.htm' title="nginx">nginx</a></li>
+<li><a href='/list/list_247_1.htm' title="zabbix">zabbix</a></li>
+<li><a href='/list/list_255_1.htm' title="云和虚拟化">云和虚拟化</a></li>
+<li><a href='/list/list_220_1.htm' title="服务器其它">服务器其它</a></li>
+</ul>
+	</div>
+</div>
+<!-- 二级菜单结束 -->	
+
+<div class="main mb10 clearfix">
+	<div class="clearfix"><span id="tonglan1" class="jbTestPos"></span></div>
+</div>
+<div class="main clearfix">
+	<div class="NavBar clearfix ptb10">
+		<div class="fl w690">
+			<div class="box mb15 mt10"><i class="icon"></i>您的位置：<a href='/'>首页</a> → <a href="/list/index_27.htm" title="网站技巧">网站技巧</a> → <a href="/list/list_82_1.htm" title="服务器">服务器</a> → <a href="/list/list_226_1.htm" title="nginx">nginx</a> → 正文内容 django部署到nginx</div>
+		</div>
+		<div class="fr w300"><div class="search">
+		<form action="/do/search.php" target="_blank">
+			<input type="hidden" name="s" value="10520733385329581432">
+			<input type="hidden" name="ie" value="gbk">
+			<input type="text" name="q" class="key_input" placeholder="请输入关键词">
+			<input type="submit" value=" " class="c_btn">
+		</form></div>
+		</div>
+	</div>
+</div>
+<!--content Star -->
+<div id="contents">
+ <!--share start-->
+ <div id="right-share">
+	<div class="right-share jb-share" id="jb-share">
+		<a class="rshare-weixin" title="">微信</a>
+        <a rel="nofollow" class="rshare-qzone" target="_blank" href="//tougao.jb51.net/" title="投稿">投稿</a>
+		<a rel="nofollow" class="rshare-sqq" target="_blank" href="http://shequ.jb51.net/" title="交流社区">交流社区</a>
+		<a rel="nofollow" class="rshare-tsina" target="_blank" href="http://tools.jb51.net/" title="在线工具">在线工具</a>
+	</div>
+	<a class="rshare-top" onClick="javascript:;"></a>
+			
+	<div id="weixin-code" class="hide">
+	<div class="popup_weixin_head"><p>关注微信公众号</p> 
+	<div id="code"><img src="//files.jb51.net/skin/2018/images/erwm.jpg" alt="扫一扫" width="100" hight="100"></div>
+	</div>
+	</div>	
+ </div>
+<!--share end-->
+
+ <div class="main clearfix bgf">
+      <div class="w750 fl">
+      <div class="article-content border">
+      <div class="title">
+            <h1 class="YaHei">详解通过Nginx部署Django（基于ubuntu)</h1>
+            <p> &nbsp;更新时间：2017年01月17日 10:06:16 &nbsp; 作者：虫师  &nbsp; <a href="#comments"> <img src="/skin/2018/images/text-message.png" width="15" height="15" /> 我要评论</a> </p>
+        </div>
+        <div class="lbd clearfix"><span id="tit_down" class="jbTestPos"></span></div>
+        <div class="art_desc mt10"><div id="art_demo">这篇文章主要介绍了详解通过Nginx部署Django（基于ubuntu)，Django的部署可以有很多方式，采用nginx+uwsgi的方式是其中比较常见的一种方式，有兴趣的可以了解一下。</div></div>
+        <div class="lbd clearfix"><span id="art_up" class="jbTestPos"></span></div>
+        <div id="content">
+            <p>Django的部署可以有很多方式，采用nginx+uwsgi的方式是其中比较常见的一种方式。</p>
+<p>在这种方式中，我们的通常做法是，将nginx作为服务器最前端，它将接收WEB的所有请求，统一管理请求。nginx把所有静态请求自己来处理（这是NGINX的强项）。然后，NGINX将所有非静态请求通过uwsgi传递给Django，由Django来进行处理，从而完成一次WEB请求。</p>
+<p>可见，uwsgi的作用就类似一个桥接器。起到桥梁的作用。</p>
+<p>Linux的强项是用来做服务器，所以，下面的整个部署过程我们选择在Ubuntu下完成。</p>
+<p><span style="color: #ff0000"><strong>一、安装Nginx&nbsp;&nbsp;&nbsp;</strong></span><strong>&nbsp;&nbsp;&nbsp;</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+<p>Nginx是一款轻量级的Web 服务器/反向代理服务器及电子邮件（IMAP/POP3）代理服务器，并在一个BSD-like 协议下发行。其特点是占有内存少，并发能力强，事实上nginx的并发能力确实在同类型的网页服务器中表现较好。</p>
+<p>Nginx同样为当前非常流行的web服务器。利用其部署Django，我们在此也做简单的介绍。</p>
+<p>Nginx官网：<a href="http://nginx.org/">http://nginx.org/</a></p>
+<p>打开ubuntu控制台（ctrl+alt+t）利用Ubuntu的仓库安装。</p>
+<div class="jb51code">
+<pre class="brush:bash;">
+fnngj@ubuntu:~$ sudo apt-get install nginx #安装</pre>
+</div>
+<p>启动Nginx：</p>
+<div class="jb51code">
+<pre class="brush:bash;">
+fnngj@ubuntu:~$ /etc/init.d/nginx start #启动
+fnngj@ubuntu:~$ /etc/init.d/nginx stop #关闭
+fnngj@ubuntu:~$ /etc/init.d/nginx restart #重启</pre>
+</div>
+<p>修改Nginx默认端口号，打开/etc/nginx/nginx.conf 文件，修改端口号。</p>
+<div class="jb51code">
+<pre class="brush:bash;">
+ server {
+  listen    8088;  # 修改端口号
+  server_name localhost;
+
+  #charset koi8-r; 
+
+  #access_log logs/host.access.log main;
+
+  location / {
+    root  html;
+    index index.html index.htm;
+  }
+</pre>
+</div>
+<p>大概在文件36行的位置，将默认的80端口号改成其它端口号，如 8088。因为默认的80端口号很容易被其它应用程序占用。</p>
+<p>然后，通过上面命令重启nginx。访问：http://127.0.0.1:8088/</p>
+<p><img src="//files.jb51.net/file_images/article/201701/2017011709580314.png" alt="" />　　</p>
+<p>如果出现如上图，说明Nginx启动成功。&nbsp;</p>
+<p><span style="color: #ff0000"><strong>二、安装uwsgi&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong></span><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+<p>&nbsp;通过pip安装uwsgi。</p>
+<div class="jb51code">
+<pre class="brush:bash;">
+root@ubuntu:/etc# python3 -m pip install uwsgi</pre>
+</div>
+<p>测试uwsgi，创建test.py文件：</p>
+<div class="jb51code">
+<pre class="brush:py;">
+def application(env, start_response):
+  start_response('200 OK', [('Content-Type','text/html')])
+  return [b"Hello World"]</pre>
+</div>
+<p>通过uwsgi运行该文件。</p>
+<div class="jb51code">
+<pre class="brush:py;">
+fnngj@ubuntu:~/pydj$ uwsgi --http :8001 --wsgi-file test.py</pre>
+</div>
+<p><img src="//files.jb51.net/file_images/article/201701/2017011709580315.png" alt="" /></p>
+<p>接下来配置Django与uwsgi连接。此处，假定的我的django项目位置为：/home/fnngj/pydj/myweb</p>
+<p><div class="codetitle"><span><a style="CURSOR: pointer" data="93819" class="copybut" id="copybut93819" onclick="doCopy('code93819')"><U>复制代码</U></a></span> 代码如下:</div><div class="codebody" id="code93819"><br />
+<a href="mailto:fnngj@ubuntu:~/pydj$">fnngj@ubuntu:~/pydj$</a> uwsgi --http :8001 --chdir /home/fnngj/pydj/myweb/ --wsgi-file myweb/wsgi.py --master --processes 4 --threads 2 --stats 127.0.0.1:9191<br />
+</div></p>
+<p><strong>常用选项：</strong></p>
+<p>http ： 协议类型和端口号</p>
+<p>processes ： 开启的进程数量</p>
+<p>workers ： 开启的进程数量，等同于processes（官网的说法是spawn the specified number ofworkers / processes）</p>
+<p>chdir ： 指定运行目录（chdir to specified directory before apps loading）</p>
+<p>wsgi-file ： 载入wsgi-file（load .wsgi file）</p>
+<p>stats ： 在指定的地址上，开启状态服务（enable the stats server on the specified address）</p>
+<p>threads ： 运行线程。由于GIL的存在，我觉得这个真心没啥用。（run each worker in prethreaded mode with the specified number of threads）</p>
+<p>master ： 允许主进程存在（enable master process）</p>
+<p>daemonize ： 使进程在后台运行，并将日志打到指定的日志文件或者udp服务器（daemonize uWSGI）。实际上最常用的，还是把运行记录输出到一个本地文件上。</p>
+<p>pidfile ： 指定pid文件的位置，记录主进程的pid号。</p>
+<p>vacuum ： 当服务器退出的时候自动清理环境，删除unix socket文件和pid文件（try to remove all of the generated file/sockets）</p>
+<p><span style="color: #ff0000"><strong>三、Nginx+uwsgi+Django&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+<p>接下来，我们要将三者结合起来。首先罗列一下项目的所需要的文件：</p>
+<div class="jb51code">
+<pre class="brush:plain;">
+myweb/
+
+├── manage.py
+
+├── myweb/
+
+│  ├── __init__.py
+
+│  ├── settings.py
+
+│  ├── urls.py
+
+│  └── wsgi.py
+
+└── myweb_uwsgi.ini
+</pre>
+</div>
+<p>在我们通过Django创建myweb项目时，在子目录myweb下已经帮我们生成的 wsgi.py文件。所以，我们只需要再创建myweb_uwsgi.ini配置文件即可，当然，uwsgi支持多种类型的配置文件，如xml，ini等。此处，使用ini类型的配置。</p>
+<div class="jb51code">
+<pre class="brush:bash;">
+# myweb_uwsgi.ini file
+[uwsgi]
+
+# Django-related settings
+
+socket = :8000
+
+# the base directory (full path)
+chdir      = /home/fnngj/pydj/myweb
+
+# Django s wsgi file
+module     = myweb.wsgi
+
+# process-related settings
+# master
+master     = true
+
+# maximum number of worker processes
+processes    = 4
+
+# ... with appropriate permissions - may be needed
+# chmod-socket  = 664
+# clear environment on exit
+vacuum     = true
+
+</pre>
+</div>
+<p>这个配置，其实就相当于在上一小节中通过wsgi命令，后面跟一堆参数的方式，给文件化了。</p>
+<p>socket&nbsp; 指定项目执行的端口号。</p>
+<p>chdir&nbsp;&nbsp; 指定项目的目录。</p>
+<p>module&nbsp; myweb.wsgi ，可以这么来理解，对于myweb_uwsgi.ini文件来说，与它的平级的有一个myweb目录，这个目录下有一个wsgi.py文件。</p>
+<p>其它几个参数，可以参考上一小节中参数的介绍。</p>
+<p>接下来，切换到myweb项目目录下，通过uwsgi命令读取myweb_uwsgi.ini文件启动项目。</p>
+<div class="jb51code">
+<pre class="brush:bash;">
+fnngj@ubuntu:~$ cd /home/fnngj/pydj/myweb/
+fnngj@ubuntu:~/pydj/myweb$ uwsgi --ini myweb_uwsgi.ini 
+[uWSGI] getting INI configuration from myweb_uwsgi.ini
+*** Starting uWSGI 2.0.12 (32bit) on [Sat Mar 12 13:05:06 2016] ***
+compiled with version: 4.8.4 on 26 January 2016 06:14:41
+os: Linux-3.19.0-25-generic #26~14.04.1-Ubuntu SMP Fri Jul 24 21:18:00 UTC 2015
+nodename: ubuntu
+machine: i686
+clock source: unix
+detected number of CPU cores: 2
+current working directory: /home/fnngj/pydj/myweb
+detected binary path: /usr/local/bin/uwsgi
+!!! no internal routing support, rebuild with pcre support !!!
+chdir() to /home/fnngj/pydj/myweb
+your processes number limit is 15962
+your memory page size is 4096 bytes
+detected max file descriptor number: 1024
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to TCP address :8000 fd 3
+Python version: 3.4.3 (default, Oct 14 2015, 20:37:06) [GCC 4.8.4]
+*** Python threads support is disabled. You can enable it with --enable-threads ***
+Python main interpreter initialized at 0x8b52dc0
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 319920 bytes (312 KB) for 4 cores
+*** Operational MODE: preforking ***
+WSGI app 0 (mountpoint='') ready in 1 seconds on interpreter 0x8b52dc0 pid: 7158 (default app)
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI master process (pid: 7158)
+spawned uWSGI worker 1 (pid: 7160, cores: 1)
+spawned uWSGI worker 2 (pid: 7161, cores: 1)
+spawned uWSGI worker 3 (pid: 7162, cores: 1)
+spawned uWSGI worker 4 (pid: 7163, cores: 1)
+
+</pre>
+</div>
+<p>注意查看uwsgi的启动信息，如果有错，就要检查配置文件的参数是否设置有误。</p>
+<p>再接下来要做的就是修改nginx.conf配置文件。打开/etc/nginx/nginx.conf文件，添加如下内容。</p>
+<div class="jb51code">
+<pre class="brush:bash;">
+……
+server {
+  listen     8099; 
+  server_name  127.0.0.1 
+  charset UTF-8;
+  access_log   /var/log/nginx/myweb_access.log;
+  error_log    /var/log/nginx/myweb_error.log;
+
+  client_max_body_size 75M;
+
+  location / { 
+    include uwsgi_params;
+    uwsgi_pass 127.0.0.1:8000;
+    uwsgi_read_timeout 2;
+  }  
+  location /static {
+    expires 30d;
+    autoindex on; 
+    add_header Cache-Control private;
+    alias /home/fnngj/pydj/myweb/static/;
+   }
+ }
+……
+
+</pre>
+</div>
+<p>&nbsp;listen 指定的是nginx代理uwsgi对外的端口号。</p>
+<p>server_name&nbsp; 网上大多资料都是设置的一个网址（例，www.example.com），我这里如果设置成网址无法访问，所以，指定的到了本机默认ip。</p>
+<p>在进行配置的时候，我有个问题一直想不通。nginx到底是如何uwsgi产生关联。现在看来大概最主要的就是这两行配置。</p>
+<p>include uwsgi_params;</p>
+<p>uwsgi_pass 127.0.0.1:8000;</p>
+<p>include 必须指定为uwsgi_params；而uwsgi_pass指的本机IP的端口与myweb_uwsgi.ini配置文件中的必须一直。</p>
+<p>现在重新启动nginx，翻看上面重启动nginx的命令。然后，访问：http://127.0.0.1:8099/</p>
+<p>通过这个IP和端口号的指向，请求应该是先到nginx的。如果你在页面上执行一些请求，就会看到，这些请求最终会转到uwsgi来处理。</p>
+<p><img src="//files.jb51.net/file_images/article/201701/2017011709580316.jpg&#63;201701795947" alt="" /></p>
+<p>以上就是本文的全部内容，希望对大家的学习有所帮助，也希望大家多多支持脚本之家。</p>
+            
+            <div class="art_xg">
+<h4>您可能感兴趣的文章:</h4><ul><li><a href="/article/147967.htm" title="详解将Django部署到Centos7全攻略" target="_blank">详解将Django部署到Centos7全攻略</a></li><li><a href="/article/94643.htm" title="CentOS6.5设置Django开发环境" target="_blank">CentOS6.5设置Django开发环境</a></li><li><a href="/article/143358.htm" title="Python3+django2.0+apache2+ubuntu14部署网站上线的方法" target="_blank">Python3+django2.0+apache2+ubuntu14部署网站上线的方法</a></li><li><a href="/article/137791.htm" title="解决nginx+uwsgi部署Django的所有问题(小结)" target="_blank">解决nginx+uwsgi部署Django的所有问题(小结)</a></li><li><a href="/article/134884.htm" title="使用Docker搭建Django，Nginx，R，Python部署环境的方法" target="_blank">使用Docker搭建Django，Nginx，R，Python部署环境的方法</a></li><li><a href="/article/83451.htm" title="解析Mac OS下部署Pyhton的Django框架项目的过程" target="_blank">解析Mac OS下部署Pyhton的Django框架项目的过程</a></li><li><a href="/article/80774.htm" title="Windows下Python的Django框架环境部署及应用编写入门" target="_blank">Windows下Python的Django框架环境部署及应用编写入门</a></li><li><a href="/article/76944.htm" title="Linux下将Python的Django项目部署到Apache服务器" target="_blank">Linux下将Python的Django项目部署到Apache服务器</a></li><li><a href="/article/76943.htm" title="在Linux系统上部署Apache+Python+Django+MySQL环境" target="_blank">在Linux系统上部署Apache+Python+Django+MySQL环境</a></li><li><a href="/article/75151.htm" title="使用PyCharm配合部署Python的Django框架的配置纪实" target="_blank">使用PyCharm配合部署Python的Django框架的配置纪实</a></li><li><a href="/article/149135.htm" title="将Django项目部署到CentOs服务器中" target="_blank">将Django项目部署到CentOs服务器中</a></li></ul>
+</div>
+<div class="clearfix">
+<span id="art_bot" class="jbTestPos"></span>
+</div>
+        </div><!--endmain-->
+<div class="tags clearfix">
+	<i class="icon-tag"></i>
+	<ul class="meta-tags items">
+	  <li class="tag item"><a href="http://common.jb51.net/tag/django/1.htm" target="_blank" title="搜索关于django的文章" rel="nofollow">django</a></li>
+<li class="tag item"><a href="http://common.jb51.net/tag/nginx/1.htm" target="_blank" title="搜索关于nginx的文章" rel="nofollow">nginx</a></li>
+
+	</ul>
+</div>        
+
+<div class="lbd clearfix">
+<span id="art_down" class="jbTestPos"></span>
+</div>
+<div id="shoucang"></div>
+
+<div class="xgcomm clearfix">
+	<h2>相关文章</h2>
+	<ul><li class="lbd clearfix"><span id="art_xg" class="jbTestPos"></span></li><li><div class="item-inner"><a href="/article/77611.htm" title="Nginx配合Apache或Tomcat的动静分离基本配置实例" class="img-wrap" target="_blank"> <img alt="Nginx配合Apache或Tomcat的动静分离基本配置实例" src="//files.jb51.net/images/xgimg/bcimg0.png"> </a><div class="rbox"><div class="rbox-inner"><p><a class="link title" target="_blank" href="/article/77611.htm" title="Nginx配合Apache或Tomcat的动静分离基本配置实例">Nginx配合Apache或Tomcat的动静分离基本配置实例</a></p><div class="item-info"><div class="js">这篇文章主要介绍了Nginx配合Apache或Tomcat的动静分离基本配置实例,实际上Nginx专门负责静态和反向代理是主流服务器配置方案,需要的朋友可以参考下</div><span class="lbtn" style="float:right"> 2016-01-01 </span></div></div></div></div></li>
+<li><div class="item-inner"><a href="/article/87760.htm" title="Nginx防盗链根据UA屏蔽恶意User Agent请求(防蜘蛛)" class="img-wrap" target="_blank"> <img alt="Nginx防盗链根据UA屏蔽恶意User Agent请求(防蜘蛛)" src="//files.jb51.net/images/xgimg/bcimg1.png"> </a><div class="rbox"><div class="rbox-inner"><p><a class="link title" target="_blank" href="/article/87760.htm" title="Nginx防盗链根据UA屏蔽恶意User Agent请求(防蜘蛛)">Nginx防盗链根据UA屏蔽恶意User Agent请求(防蜘蛛)</a></p><div class="item-info"><div class="js">相对于 Apache，Nginx 占用的系统资源更少，更适合 VPS 使用。恶意盗链的 User Agent 无处不在，博客更换到 WordPress 没几天，就被 SPAM（垃圾留言）盯上，又被暴力破解后台用户名密码。今天来介绍 Nginx 屏蔽恶意 User Agent请求的方法</div><span class="lbtn" style="float:right"> 2016-07-07 </span></div></div></div></div></li>
+<li><div class="item-inner"><a href="/article/60862.htm" title="Nginx实现不同域名输出不同的服务器头信息方法" class="img-wrap" target="_blank"> <img alt="Nginx实现不同域名输出不同的服务器头信息方法" src="//files.jb51.net/images/xgimg/bcimg2.png"> </a><div class="rbox"><div class="rbox-inner"><p><a class="link title" target="_blank" href="/article/60862.htm" title="Nginx实现不同域名输出不同的服务器头信息方法">Nginx实现不同域名输出不同的服务器头信息方法</a></p><div class="item-info"><div class="js">这篇文章主要介绍了Nginx实现不同域名输出不同的服务器头信息方法,本文使用了一个ngx_headers_more模块实现这个特殊需求,需要的朋友可以参考下</div><span class="lbtn" style="float:right"> 2015-02-02 </span></div></div></div></div></li>
+<li><div class="item-inner"><a href="/article/25694.htm" title="Nginx geoip模块实现地区性负载均衡" class="img-wrap" target="_blank"> <img alt="Nginx geoip模块实现地区性负载均衡" src="//files.jb51.net/images/xgimg/bcimg3.png"> </a><div class="rbox"><div class="rbox-inner"><p><a class="link title" target="_blank" href="/article/25694.htm" title="Nginx geoip模块实现地区性负载均衡">Nginx geoip模块实现地区性负载均衡</a></p><div class="item-info"><div class="js">相信做过awstats的都用过开源的geoip.dat  ip数据库，刚好nginx wiki上有geoip 模块，这样就可以实现地区性的负载均衡，但是maxmind 的ip数据库对中国的支持不算太好，不过现在也不错了~</div><span class="lbtn" style="float:right"> 2010-12-12 </span></div></div></div></div></li>
+<li><div class="item-inner"><a href="/article/121235.htm" title="Nginx负载均衡配置简单配置方法" class="img-wrap" target="_blank"> <img alt="Nginx负载均衡配置简单配置方法" src="//files.jb51.net/images/xgimg/bcimg4.png"> </a><div class="rbox"><div class="rbox-inner"><p><a class="link title" target="_blank" href="/article/121235.htm" title="Nginx负载均衡配置简单配置方法">Nginx负载均衡配置简单配置方法</a></p><div class="item-info"><div class="js">Nginx作为负载均衡服务器，用户请求先到达nginx，再由nginx根据负载配置将请求转发至不同的Web服务器。下面通过本文给大家分享Nginx负载均衡配置简单配置方法，需要的的朋友参考下吧</div><span class="lbtn" style="float:right"> 2017-08-08 </span></div></div></div></div></li>
+<li><div class="item-inner"><a href="/article/143682.htm" title="详解nginx的请求限制（连接限制和请求限制）" class="img-wrap" target="_blank"> <img alt="详解nginx的请求限制（连接限制和请求限制）" src="//files.jb51.net/images/xgimg/bcimg5.png"> </a><div class="rbox"><div class="rbox-inner"><p><a class="link title" target="_blank" href="/article/143682.htm" title="详解nginx的请求限制（连接限制和请求限制）">详解nginx的请求限制（连接限制和请求限制）</a></p><div class="item-info"><div class="js">这篇文章主要介绍了详解nginx的请求限制（连接限制和请求限制），小编觉得挺不错的，现在分享给大家，也给大家做个参考。一起跟随小编过来看看吧</div><span class="lbtn" style="float:right"> 2018-07-07 </span></div></div></div></div></li>
+<li><div class="item-inner"><a href="/article/131362.htm" title="Nginx服务器配置HTTPS nginx.config 配置文件(教程)" class="img-wrap" target="_blank"> <img alt="Nginx服务器配置HTTPS nginx.config 配置文件(教程)" src="//files.jb51.net/images/xgimg/bcimg6.png"> </a><div class="rbox"><div class="rbox-inner"><p><a class="link title" target="_blank" href="/article/131362.htm" title="Nginx服务器配置HTTPS nginx.config 配置文件(教程)">Nginx服务器配置HTTPS nginx.config 配置文件(教程)</a></p><div class="item-info"><div class="js">下面小编就为大家分享一篇Nginx服务器配置HTTPS nginx.config 配置文件(教程)，具有很好的参考价值，希望对大家有所帮助。一起跟随小编过来看看吧</div><span class="lbtn" style="float:right"> 2017-12-12 </span></div></div></div></div></li>
+<li><div class="item-inner"><a href="/article/52057.htm" title="5种nginx负载均衡配置方法分享" class="img-wrap" target="_blank"> <img alt="5种nginx负载均衡配置方法分享" src="//files.jb51.net/images/xgimg/bcimg7.png"> </a><div class="rbox"><div class="rbox-inner"><p><a class="link title" target="_blank" href="/article/52057.htm" title="5种nginx负载均衡配置方法分享">5种nginx负载均衡配置方法分享</a></p><div class="item-info"><div class="js">这篇文章主要介绍了5种nginx负载均衡配置方法分享,分别是nginx自带的3种方法和2种第三方配置方法,需要的朋友可以参考下</div><span class="lbtn" style="float:right"> 2014-07-07 </span></div></div></div></div></li>
+<li><div class="item-inner"><a href="/article/113172.htm" title="Nginx 代理与负载均衡详解" class="img-wrap" target="_blank"> <img alt="Nginx 代理与负载均衡详解" src="//files.jb51.net/images/xgimg/bcimg8.png"> </a><div class="rbox"><div class="rbox-inner"><p><a class="link title" target="_blank" href="/article/113172.htm" title="Nginx 代理与负载均衡详解">Nginx 代理与负载均衡详解</a></p><div class="item-info"><div class="js">这篇文章主要介绍了Nginx 代理与负载均衡详解的相关资料,需要的朋友可以参考下</div><span class="lbtn" style="float:right"> 2017-05-05 </span></div></div></div></div></li>
+<li><div class="item-inner"><a href="/article/66009.htm" title="Nginx 502 Bad Gateway错误常见的4种原因和解决方法" class="img-wrap" target="_blank"> <img alt="Nginx 502 Bad Gateway错误常见的4种原因和解决方法" src="//files.jb51.net/images/xgimg/bcimg9.png"> </a><div class="rbox"><div class="rbox-inner"><p><a class="link title" target="_blank" href="/article/66009.htm" title="Nginx 502 Bad Gateway错误常见的4种原因和解决方法">Nginx 502 Bad Gateway错误常见的4种原因和解决方法</a></p><div class="item-info"><div class="js">这篇文章主要介绍了Nginx 502 Bad Gateway错误常见的4种原因和解决方法,本文适用FastCGI环境,其中多数原因通过配置相关参数即可解决,需要的朋友可以参考下</div><span class="lbtn" style="float:right"> 2015-05-05 </span></div></div></div></div></li>
+</ul>
+</div>
+<div class="lbd clearfix mt5">
+<span id="art_down2" class="jbTestPos"></span>
+</div>
+<a href="#comments"></a>
+<div id="comments">
+<H2>最新评论</H2>
+<div class="pd5"><div id="SOHUCS" sid="art_103245"></div></div>
+</div>
+      </div><!--endborder-->
+      </div><!--end fl-->
+      
+<div class="w350 fr">
+<div class="article-right">
+<div class="r300 clearfix"><span id="side_up" class="jbTestPos"></span></div>
+<DIV class="tabTitleBar mt10 bgf borderTblue">
+<DIV class="borderTnone pb10 YaHei">
+<H4 class="blue">大家感兴趣的内容</H4>
+<UL class="newsList newList-in">
+<li><EM class="no1">1</EM><a href="/article/35675.htm" title="nginx提示：500 Internal Server Error错误的解决方法" target="_blank">nginx提示：500 Internal Server</a></li><li><EM class="no2">2</EM><a href="/article/27533.htm" title="nginx 多站点配置方法集合" target="_blank">nginx 多站点配置方法集合</a></li><li><EM class="no3">3</EM><a href="/article/54190.htm" title="权限问题导致Nginx 403 Forbidden错误的解决方法" target="_blank">权限问题导致Nginx 403 Forbidde</a></li><li><EM class="no4">4</EM><a href="/article/47916.htm" title="nginx FastCGI错误Primary script unknown解决办法" target="_blank">nginx FastCGI错误Primary scrip</a></li><li><EM class="no5">5</EM><a href="/article/47632.htm" title="Nginx 403 forbidden的解决办法" target="_blank">Nginx 403 forbidden的解决办法</a></li><li><EM class="no6">6</EM><a href="/article/78746.htm" title="Nginx服务器的反向代理proxy_pass配置方法讲解" target="_blank">Nginx服务器的反向代理proxy_pas</a></li><li><EM class="no7">7</EM><a href="/article/50899.htm" title="Nginx伪静态配置和常用Rewrite伪静态规则集锦" target="_blank">Nginx伪静态配置和常用Rewrite伪</a></li><li><EM class="no8">8</EM><a href="/article/24598.htm" title="Nginx下301重定向域名的方法小结" target="_blank">Nginx下301重定向域名的方法小结</a></li><li><EM class="no9">9</EM><a href="/article/23902.htm" title="Windows下Nginx+PHP5的安装与配置方法" target="_blank">Windows下Nginx+PHP5的安装与配置</a></li><li><EM class="no10">10</EM><a href="/article/77253.htm" title="详解Nginx服务器中配置超时时间的方法" target="_blank">详解Nginx服务器中配置超时时间的</a></li>
+</UL>
+</DIV>
+</DIV>
+<div class="r300 clearfix mt10"><span id="idctu" class="jbTestPos"></span></div>
+<DIV class="tabTitleBar mt10 bgf borderTblue">
+<DIV class="borderTnone pb10 YaHei">
+<H4 class="blue">最近更新的内容</H4>
+<UL class="newsListA">
+<li><a href="/article/134337.htm" title="Nginx实现非套路镜像站的踩坑记录" target="_blank">Nginx实现非套路镜像站的踩坑记录</a></li><li><a href="/article/34020.htm" title="nginx 负载均衡的简单配置方法" target="_blank">nginx 负载均衡的简单配置方法</a></li><li><a href="/article/77593.htm" title="浅析Nginx配置文件中的变量的编写使用" target="_blank">浅析Nginx配置文件中的变量的编写使用</a></li><li><a href="/article/52570.htm" title="nginx中域名、目录的301重定向配置示例" target="_blank">nginx中域名、目录的301重定向配置示例</a></li><li><a href="/article/47436.htm" title="神器！最佳 Nginx 日志分析工具 GoAccess" target="_blank">神器！最佳 Nginx 日志分析工具 GoAccess</a></li><li><a href="/article/143420.htm" title="nginx location 配置 正则表达式实例详解" target="_blank">nginx location 配置 正则表达式实例详解</a></li><li><a href="/article/95041.htm" title="Nginx服务器配置性能优化方案" target="_blank">Nginx服务器配置性能优化方案</a></li><li><a href="/article/149484.htm" title="Nginx location匹配规则的方法示例" target="_blank">Nginx location匹配规则的方法示例</a></li><li><a href="/article/77259.htm" title="在Nginx服务器中配置针对TCP的负载均衡的方法" target="_blank">在Nginx服务器中配置针对TCP的负载均衡的</a></li><li><a href="/article/145961.htm" title="Nginx实现404页面的几种方法(三种)" target="_blank">Nginx实现404页面的几种方法(三种)</a></li>
+</UL>
+</DIV>
+</DIV>   
+<div class="r300 clearfix mt10"><span id="idctu1" class="jbTestPos"></span></div>
+<DIV class="tabTitleBar mt10 bgf borderTblue">
+<DIV class="borderTnone pb10 YaHei">
+<H4 class="blue">常用在线小工具</H4>
+<ul class="newsListA"><span id="bctools" class="jbTestPos"></span></ul>
+</DIV>
+</DIV>
+<div class="r300 clearfix mt10 mb10"><span id="idctu2" class="jbTestPos"></span></div> 
+<div class="rFixedBox">
+<script type="text/javascript">jb51_a_d("jb51xf");</script>
+</div>
+  </div>   
+      
+      </div><!--end fr-->
+      </div>
+</div><!--end content-->
+<div id="footer">
+<div class="main clearfix">
+<p>
+<a rel="nofollow" href="/about.htm" target="_blank">关于我们</a> - 
+<a rel="nofollow" href="/support.htm" target="_blank">广告合作</a> - 
+<a rel="nofollow" href="/linkus.htm" target="_blank">联系我们</a> -  
+<a rel="nofollow" href="/sm.htm" target="_blank">免责声明</a> -  
+<a rel="nofollow" href="/sitemap.htm" target="_blank">网站地图</a> - 
+<a rel="nofollow" href="tencent://message/?uin=461478385&Site=http://www.jb51.net" target="_blank">投诉建议</a> - 
+<a rel="nofollow" href="/up.htm" target="_blank">在线投稿</a>
+</p>
+<p><a rel="nofollow" class="ba" target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32031102000137"><img src="//icws.jb51.net/images/ghs.png"/> 苏公网安备 32031102000137号</a>&nbsp;&nbsp;<a href="http://www.miibeian.gov.cn" class="ba" rel="nofollow" target="_blank">苏ICP备14036222号</a></p>
+<p>&copy;CopyRight 2006-2019 JB51.Net Inc All Rights Reserved. 脚本之家 版权所有</p>
+</div>
+</div><!--end footer-->
+<link type="text/css" rel="stylesheet" href="/jslib/syntaxhighlighter/styles/shCore.css" />
+<link type="text/css" rel="Stylesheet" href="/jslib/syntaxhighlighter/styles/shThemeDefault.css" />
+<script type="text/javascript" src="/jslib/syntaxhighlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="/jslib/syntaxhighlighter/scripts/shAutoloader.js"></script>
+<script type="text/javascript">
+(function(){
+	var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+/*更多导航*/
+$(".nav_top p").hover(function(){$(this).addClass("hover")},function(){$(this).removeClass("hover")});
+
+if (top.location != self.location)top.location=self.location;
+
+var varwindow=$(window);
+$(function(){
+	$('#content').find('img').each(function(){
+        var img = this;
+        if (img.width >= 650 && !$(this).hasClass("nohref")){
+            img.style.width = "650px";
+            img.style.height = "auto";
+            //$(img).removeAttr('height');
+            var aTag = document.createElement('a');
+            aTag.href = img.src;
+			aTag.target="_blank";
+            $(aTag).addClass('bPic')
+            .insertAfter(img).append(img)
+          }
+    });
+	varwindow.scroll(function()
+    {	
+    	//rFixedBox跟随滚动
+    	var h = varwindow.height();
+        var top = varwindow.scrollTop();
+    	var rFixedBox = $('.rFixedBox').prev().offset();
+        var fixedTop = rFixedBox.top;
+		
+        if(top>=fixedTop+344)
+        {
+			var h1 = parseInt($('#content').children('.main').height());
+			if(parseInt(top) + 340 < h1){
+				$('.rFixedBox').css({'position':'fixed','top': 0});
+			}else{
+				$('.rFixedBox').css({'position':'absolute','top': h1-510});
+			}
+        }
+        else
+        {
+            $('.rFixedBox').css({'position':'static', 'top':0});   
+        }	
+       /* return true;*/
+	   
+	   /*右侧快捷菜单*/
+	   sideFixed();
+    });
+	var ww = varwindow.width();
+	
+	function sideFixed(){
+	var scrolltop = document.body.scrollTop || document.documentElement.scrollTop;
+	var a1 = 550;
+	if(ww>440){
+		if(a1<=scrolltop){
+			$('#right-share').slideDown();
+			}
+		else{
+			$('#right-share').slideUp();
+			}
+		}
+	}
+	$('.rshare-weixin').hover(function(){
+			$('#weixin-code').removeClass('hide');
+		},function(){
+			$('#weixin-code').addClass('hide');
+		});
+	/*二维码*/
+	$('#right-share .rshare-top').on('click',function(){
+        $('html,body').animate({'scrollTop':0},500);
+    });
+/*$(document).ready(function() {
+  $("#content img").unveil();
+});	*/
+
+if(suoyin=="ok"){
+	GenerateContentList();
+}
+
+SyntaxHighlighter.autoloader(
+	'applescript			/jslib/syntaxhighlighter/scripts/shBrushAppleScript.js',
+	'actionscript3 as3		/jslib/syntaxhighlighter/scripts/shBrushAS3.js',
+	'bash shell				/jslib/syntaxhighlighter/scripts/shBrushBash.js',
+	'coldfusion cf			/jslib/syntaxhighlighter/scripts/shBrushColdFusion.js',
+	'cpp c					/jslib/syntaxhighlighter/scripts/shBrushCpp.js',
+	'obj-c objc				/jslib/syntaxhighlighter/scripts/shBrushObjC.js',
+	'c# c-sharp csharp		/jslib/syntaxhighlighter/scripts/shBrushCSharp.js',
+	'css					/jslib/syntaxhighlighter/scripts/shBrushCss.js',
+	'delphi pascal			/jslib/syntaxhighlighter/scripts/shBrushDelphi.js',
+	'diff patch pas			/jslib/syntaxhighlighter/scripts/shBrushDiff.js',
+	'erl erlang				/jslib/syntaxhighlighter/scripts/shBrushErlang.js',
+	'groovy					/jslib/syntaxhighlighter/scripts/shBrushGroovy.js',
+	'haxe hx				/jslib/syntaxhighlighter/scripts/shBrushHaxe.js',
+	'java					/jslib/syntaxhighlighter/scripts/shBrushJava.js',
+	'jfx javafx				/jslib/syntaxhighlighter/scripts/shBrushJavaFX.js',
+	'js jscript javascript	/jslib/syntaxhighlighter/scripts/shBrushJScript.js',
+	'perl pl				/jslib/syntaxhighlighter/scripts/shBrushPerl.js',
+	'php					/jslib/syntaxhighlighter/scripts/shBrushPhp.js',
+	'text plain				/jslib/syntaxhighlighter/scripts/shBrushPlain.js',
+	'py python				/jslib/syntaxhighlighter/scripts/shBrushPython.js',
+	'ruby rails ror rb		/jslib/syntaxhighlighter/scripts/shBrushRuby.js',
+	'scala					/jslib/syntaxhighlighter/scripts/shBrushScala.js',
+	'sql					/jslib/syntaxhighlighter/scripts/shBrushSql.js',
+	'vb vbnet				/jslib/syntaxhighlighter/scripts/shBrushVb.js',
+	'ps powershell			/jslib/syntaxhighlighter/scripts/shBrushPowerShell.js',
+	'xml xhtml xslt html	/jslib/syntaxhighlighter/scripts/shBrushXml.js'
+);
+SyntaxHighlighter.all();
+});
+var ourl="http://www.cnblogs.com/fnng/p/5268633.html";
+</script>
+<script type="text/javascript" src='//icws.jb51.net/good/arcts.js'></script>
+<script>jbLoader();</script><script class="closetag">jbLoader(true);</script>
+<script>jbLoader();</script><script class="closetag">jbLoader(true);</script>
+<script>jbLoader();</script><script class="closetag">jbLoader(true);</script>
+<script>jbLoader();</script><script class="closetag">jbLoader(true);</script>
+<script>jbLoader();</script><script class="closetag">jbLoader(true);</script>
+<script>jbLoader();</script><script class="closetag">jbLoader(true);</script>
+<script>jbLoader();</script><script class="closetag">jbLoader(true);</script>
+<script>jbLoader();</script><script class="closetag">jbLoader(true);</script>
+<script>jbLoader();</script><script class="closetag">jbLoader(true);</script>
+<script>jbLoader();</script><script class="closetag">jbLoader(true);</script>
+<script>jbLoader();</script><script class="closetag">jbLoader(true);</script>
+<script>jbLoader();</script><script class="closetag">jbLoader(true);</script>
+<script>jbLoader();</script><script class="closetag">jbLoader(true);</script>
+<script>jbLoader();</script><script class="closetag">jbLoader(true);</script>
+<script>jbLoader();</script><script class="closetag">jbLoader(true);</script>
+<div id="tongji">
+<script type="text/javascript" src="//icws.jb51.net/tongji/tongji.js"></script>
+</div>
+<script type="text/javascript">
+//tu+
+var cpro_id = "u1893014";
+document.write('<scri'+'pt src="//cpro.baidustatic.com/cpro/ui/i.js" type="text/javascript"></s'+'cript>');
+(function(){
+var src = (document.location.protocol == "http:") ? "http://js.passport.qihucdn.com/11.0.1.js?2f793ca9dd6f4c32488903eed5c7fbcb":"https://jspassport.ssl.qhimg.com/11.0.1.js?2f793ca9dd6f4c32488903eed5c7fbcb";
+document.write('<script src="' + src + '" id="sozz"><\/script>');
+})();
+</script> 
+<script type="text/javascript" src="//www.jb51.net/pl.asp?id=103245"></script>
+<script type="application/ld+json">
+        {
+            "@context": "https://ziyuan.baidu.com/contexts/cambrian.jsonld",
+            "@id": "https://www.jb51.net/article/103245.htm",
+            "appid": "1549322409310619",
+            "title": "详解通过Nginx部署Django（基于ubuntu)",
+            "description": "这篇文章主要介绍了详解通过Nginx部署Django（基于ubuntu)，Django的部署可以有很多方式，采用nginx+uwsgi的方式是其中比较常见的一种方式，有兴趣的可以了解一下。",
+            "pubDate": "2017-01-17T10:06:16",
+			"upDate": "2017-01-17T10:06:16"
+        }
+</script>
+</body>
+</html>
+<!-- published at 2019/4/5 12:30:51By dxycms qq:461478385  -->
