@@ -1,0 +1,115 @@
+1、安装文件准备
+oracle-instantclient11.2-basic-11.2.0.2.0.x86_64.rpm
+oracle-instantclient11.2-devel-11.2.0.2.0.x86_64.rpm
+oracle-instantclient11.2-jdbc-11.2.0.2.0.x86_64.rpm
+oracle-instantclient11.2-odbc-11.2.0.2.0.x86_64.rpm
+oracle-instantclient11.2-sqlplus-11.2.0.2.0.x86_64.rpm
+链接：http://pan.baidu.com/s/1c165Al6 密码：jsqu
+2、安装文件过程
+rpm -ivh oracle-instantclient11.2-basic-11.2.0.2.0.x86_64.rpm
+rpm -ivh oracle-instantclient11.2-devel-11.2.0.2.0.x86_64.rpm
+rpm -ivh oracle-instantclient11.2-jdbc-11.2.0.2.0.x86_64.rpm
+rpm -ivh oracle-instantclient11.2-odbc-11.2.0.2.0.x86_64.rpm
+rpm -ivh oracle-instantclient11.2-sqlplus-11.2.0.2.0.x86_64.rpm
+3、安装完成的目录结构
+安装默认目录在：/usr/lib/oracle，该目录下的目录结构为如下
+└── 11.2
+└── client64
+├── bin
+│   ├── adrci
+│   ├── genezi
+│   └── sqlplus
+├── lib
+│   ├── glogin.sql
+│   ├── libclntsh.so -> libclntsh.so.11.1
+│   ├── libclntsh.so.11.1
+│   ├── ...
+│   └── xstreams.jar
+├── network
+   ├── admin
+
+
+4、现在需要在/usr/lib/oracle/11.2/client64/network/admin 新建一个tnsnames.ora文件，文件内容如下格式：
+RCL =
+(DESCRIPTION =
+(ADDRESS = (PROTOCOL = TCP)(HOST = xxx.xxx.xxx.xxx)(PORT = 1521))
+(CONNECT_DATA =
+(SERVER = DEDICATED)
+(SERVICE_NAME = ORCL)
+)
+)
+
+5、设置ORACLE环境变量
+export ORACLE_HOME=/usr/lib/oracle/11.2/client64
+export TNS_ADMIN=$ORACLE_HOME/network/admin
+export NLS_LANG="american_america.zhs16gbk" ;
+export LD_LIBRARY_PATH=$ORACLE_HOME/lib
+export PATH=$ORACLE_HOME/bin:$PATH
+
+6、测试sqlplus命令
+本地：sqlplus /nolog
+远程：sqlplus name/password@xxx.xxx.xxx.xxx/oracl
+
+7、安装sqlldr命令准备文件：
+rdbms文件夹 network/mesg文件夹
+文件来源于 oracle完全安装版本里面的文件。
+
+8、文件导入：
+将rdbms文件导入到/usr/lib/oracle/11.2/client64
+mesg文件夹导入到/usr/lib/oracle/11.2/client64/network
+sqlldr 文件导入到/usr/lib/oracle/11.2/client64/bin
+
+9、查看当前目录结构
+       
+└── /usr/lib/oracle/11.2
+└── client64
+├── bin
+│   ├── adrci
+│   ├── genezi
+│   ├── sqlldr
+│   └── sqlplus
+├── lib
+│   ├── glogin.sql
+│   ├── libclntsh.so -> libclntsh.so.11.1
+│   ├── libclntsh.so.11.1
+│   ├── libheteroxa11.so
+│   ├── libnnz11.so
+│   ├── libocci.so -> libocci.so.11.1
+│   ├── ...
+│   ├── ottclasses.zip
+│   └── xstreams.jar
+├── network
+│   ├── admin
+│   │   └── tnsnames.ora
+│   └── mesg
+│   ├── naukus.msb
+│   ├── naukus.msg
+│   ├── ncrus.msb
+│   ├── ....
+│   ├── tnsus.msb
+│   └── tnsus.msg
+└── rdbms
+└── mesg
+├── amduus.msb
+├── amduus.msg
+├── dbfsus.msb
+├── dbvus.msb
+├── ....
+├── udius.msb
+├── udius.msg
+├── ulus.msb
+└── ulus.msg
+
+
+10、测试sqlldr，如果出现如下信息证明安装成功
+
+11、总结：
+如果上述步骤仍然有问题，
+可能问题一：oracle 环境变量配置 比如：每次使用需要source /etc/profile
+问题一解决方法：source /etc/profile 写入/etc/rc.d/rc.local
+可能问题二：命令权限问题
+问题二解决办法：chmod -R 增加/usr/lib/oracle文件权限
+
+————————————————
+版权声明：本文为CSDN博主「张哈哈_123」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/m526500289/article/details/78260915
