@@ -17,7 +17,8 @@ data = pd.read_excel(file, sheet_name=sheetname)
 # print("第二三行: \n{0}".format(rf.loc[[1,2]].values))
 df = pd.DataFrame(data, columns=['title', 'info', 'match'])
 strdata = '正常'
-result = data.loc[data['title'].str.contains(strdata)]
+#result = data.loc[data['title'].str.contains(strdata)]
+result = data.loc[data['title'] == strdata]
 print(result)
 loginnormal = result.iloc[:, 2].values
 login = np.array2string(loginnormal)
